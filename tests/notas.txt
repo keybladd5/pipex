@@ -1,0 +1,26 @@
+Recibe 4 elementos 
+
+infile comand1 comand2 outline
+
+Infile: son los elementos que debe recibir el primer comando
+Outfile: donde se debe mostra el output
+
+Se podria definir el sdtin como el infile y despues el stdout como el Outfile
+
+execve(const char *file, char **argv, char **envp);
+				⬆️
+	se puede crear un string que contenga /bin/
+	y luego hacer un strjoin con el argv[2] que seria el comand1
+
+Tambien es posible modificar el input que se manda a execve con 
+asi argv+1 para que obvie el nombre del binario
+
+La prueba anterior funciona! ✅
+
+Problema, no solo existe una carpeta donde se almacenan los binarios
+de los comandos, la ruta /bin contiene unos pocos, 
+la gran mayoria se encuentran en /usr/bin
+
+
+prueba append
+prueba append2
