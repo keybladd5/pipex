@@ -16,10 +16,41 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
+//REVISAR si el path existe, y errores con sus salidas
+void	exec_cmd(char *argv[], char *envp[], int n_cmd)
+{
+	char **cmd;
+	char **path;
+	char *filename;
+	char *cmd_exec;
+	int i;
+	int x;
+
+	i = 0;
+	x = 0;
+	filename = NULL;
+	cmd = ft_split(argv[n_cmd], ' ');
+	while (envp[i])
+	{
+		if (ft_strncmp("PATH=", envp[i], 5) != 0)
+			i++;
+		else
+			break;
+	}
+	path = ft_split(envp[i], ':');
+	path[x] = ft_substr(path[x], 5, ft_strlen(path[x]));
+	cmd_exec = ft_strjoin("/", cmd[0]); 
+	while(path[x])
+	{
+		filename = ft_strjoin(path[x], cmd_exec);
+		if ((execve(filename, cmd, NULL) == -1))
+			x++;
+	}
+}
 
 int	main(int argc, char *argv[], char *envp[])
 {
-	if (argc != 3)
+	if (argc != 5)
 		return (1);
 	int pipefd[2];
 	pipe(pipefd);
@@ -34,33 +65,21 @@ int	main(int argc, char *argv[], char *envp[])
 		close(fd);
 		dup2(pipefd[1], 1);
 		close(pipefd[1]);
-		//char *arg = ft_strjoin("/bin/", argv[2]);
-		char *args[2];
-		args[0] = "/bin/cat";
-		args[1] = NULL;
-		if ((execve("/bin/cat", args, NULL) == -1))
-			perror("ERROR en EXECVE padre\n");
-		//if ((execve(arg, argv+2, NULL) == -1))
-			//perror("ERROR en EXECVE hijo\n");
+		exec_cmd(argv, envp, 2);
 	}
 	wait(NULL);
 	int pid2 = fork();
 	if (pid2 == 0)
 	{
 		close(pipefd[1]);
-		if (access(argv[2], R_OK) == -1)
+		if (access(argv[4], R_OK) == -1)
 			perror("Error acces");
-		int fd2 = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0644); 
+		int fd2 = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644); 
 		dup2(fd2, 1);
 		close(fd2);
 		dup2(pipefd[0], 0);
 		close(pipefd[0]);
-		//char *arg2 = ft_strjoin("/bin/", argv[3]);
-		char *args2[2];
-		args2[0] = "/usr/bin/wc";
-		args2[1] = NULL;
-		if ((execve("/usr/bin/wc", args2, NULL) == -1))
-			perror("ERROR en EXECVE padre\n");
+		exec_cmd(argv, envp, 3);
 	}
 	close(pipefd[0]);
 	close(pipefd[1]);
