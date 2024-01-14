@@ -80,9 +80,14 @@ int	main(int argc, char *argv[], char *envp[])
 	if (pid1 == 0)
 	{
 		close(pipefd[0]);
-		if (access(argv[1], R_OK) == -1)
-			perror("Error acces");
+		if (access(argv[2], R_OK) == -1)
+			perror("Comand ERROR");
 		int fd = open(argv[1], O_RDONLY);
+		if (fd < 0)
+		{
+			perror("File ERROR");
+			exit(1);
+		}
 		dup2(fd, 0);
 		close(fd);
 		dup2(pipefd[1], 1);
