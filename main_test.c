@@ -30,21 +30,43 @@ void	exec_cmd(char *argv[], char *envp[], int n_cmd)
 	x = 0;
 	filename = NULL;
 	cmd = ft_split(argv[n_cmd], ' ');
+	if (!cmd)
+		exit(1);
 	while (envp[i])
 	{
 		if (ft_strncmp("PATH=", envp[i], 5) != 0)
 			i++;
+		else if (envp[i] == NULL)
+		{
+			perror("Deleted PATH");
+			exit(1);
+		}
 		else
 			break;
 	}
 	path = ft_split(envp[i], ':');
+	if (!path)
+		exit(1);
 	path[x] = ft_substr(path[x], 5, ft_strlen(path[x]));
-	cmd_exec = ft_strjoin("/", cmd[0]); 
+	if (!path[x])
+		exit(1);
+	cmd_exec = ft_strjoin("/", cmd[0]);
+	if (!cmd_exec)
+		exit(1);
 	while(path[x])
 	{
+		if (x > 0)
+			free(filename);
 		filename = ft_strjoin(path[x], cmd_exec);
+		if (!filename)
+			exit(1);
 		if ((execve(filename, cmd, NULL) == -1))
 			x++;
+		else if (path[x] == NULL)
+		{
+			perror("Error comand");
+			exit(1);
+		}
 	}
 }
 
@@ -83,7 +105,7 @@ int	main(int argc, char *argv[], char *envp[])
 	}
 	close(pipefd[0]);
 	close(pipefd[1]);
-	exit(1);
+	exit(0);
 }
 
 /*Check this https://csnotes.medium.com/pipex-tutorial-42-project-4469f5dd5901*/
