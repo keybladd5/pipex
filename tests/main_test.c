@@ -32,17 +32,14 @@ void	exec_cmd(char *argv[], char *envp[], int n_cmd)
 	cmd = ft_split(argv[n_cmd], ' ');
 	if (!cmd)
 		exit(1);
-	while (envp[i])
+	while (ft_strncmp("PATH=", envp[i], 5) != 0)
 	{
-		if (ft_strncmp("PATH=", envp[i], 5) != 0)
-			i++;
-		else if (envp[i] == NULL)
+		i++;
+		if (envp[i] == NULL)
 		{
 			perror("Deleted PATH");
 			exit(1);
 		}
-		else
-			break;
 	}
 	path = ft_split(envp[i], ':');
 	if (!path)
@@ -57,12 +54,12 @@ void	exec_cmd(char *argv[], char *envp[], int n_cmd)
 	{
 		if (x > 0)
 			free(filename);
-		filename = ft_strjoin(path[x], cmd_exec);
+		filename = ft_strjoin_s(path[x], cmd_exec);
 		if (!filename)
 			exit(1);
 		if ((execve(filename, cmd, NULL) == -1))
 			x++;
-		else if (path[x] == NULL)
+		if (path[x] == NULL)
 		{
 			perror("Error comand");
 			exit(1);
@@ -80,8 +77,6 @@ int	main(int argc, char *argv[], char *envp[])
 	if (pid1 == 0)
 	{
 		close(pipefd[0]);
-		if (access(argv[2], R_OK) == -1)
-			perror("Comand ERROR");
 		int fd = open(argv[1], O_RDONLY);
 		if (fd < 0)
 		{
@@ -99,8 +94,6 @@ int	main(int argc, char *argv[], char *envp[])
 	if (pid2 == 0)
 	{
 		close(pipefd[1]);
-		if (access(argv[4], R_OK) == -1)
-			perror("Error acces");
 		int fd2 = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644); 
 		dup2(fd2, 1);
 		close(fd2);

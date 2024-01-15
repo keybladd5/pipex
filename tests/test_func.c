@@ -40,6 +40,10 @@ void	exec_cmd(char *argv[], char *envp[])
 		filename = ft_strjoin(path[x], cmd_exec);
 		if ((execve(filename, cmd, NULL) == -1))
 			x++;
+		if (access(filename, X_OK) == -1 && path[x] == NULL)
+		{
+			perror("Error COMAND");
+		}
 	}
 }
 
