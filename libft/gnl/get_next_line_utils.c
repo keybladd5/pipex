@@ -41,7 +41,7 @@ char	*ft_strjoin_s(char *s1, char *s2)
 	i = 0;
 	if (!s2)
 		return (0);
-	rtrn = (char *)malloc(sizeof(char) * (ft_strlen_s(s1) + ft_strlen_s(s2) +1));
+	rtrn = (char *)malloc(sizeof(char) * (ft_strlen_s(s1) + ft_strlen_s(s2)+1));
 	if (!rtrn)
 		return (free(s1), NULL);
 	if (s1)

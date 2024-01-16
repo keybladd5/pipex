@@ -20,13 +20,16 @@ typedef struct s_pipex
 {
 	pid_t	pid1;
 	pid_t	pid2;
+	pid_t	middle_pid;
 	int		pipefd[2];
+	int		iter_pipefd[2];
 	int		fd;
 	int		i;
 	int		x;
 	char	*filename;
 	char	*cmd_exec;
 	int		n_cmd;
+	int		n_argc;
 	char	**cmd;
 	char	**path;
 	int		error_signal;
@@ -40,6 +43,8 @@ void	get_path_nd_cmd(char *argv[], char *envp[], t_pipex *data);
 
 void	exec_cmd(char *argv[], char *envp[], t_pipex *data);
 
-void	exec_cmd(char *argv[], char *envp[], t_pipex *data);
+void	ft_iter_cmds(char *argv[], char *envp[], int argc, t_pipex *data);
+
+void	middle_child(char *argv[], char *envp[], t_pipex *data);
 
 #endif

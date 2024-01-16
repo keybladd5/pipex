@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex_utils.c                                      :+:      :+:    :+:   */
+/*   pipex_utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: polmarti <polmarti@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/pipex.h"
+#include "../inc_bonus/pipex_bonus.h"
 
 void	ft_error(int type_error)
 {
@@ -33,6 +33,7 @@ void	ft_init_struct(t_pipex *data)
 {
 	data->pid1 = 0;
 	data->pid2 = 0;
+	data->middle_pid = 0;
 	data->pipefd[0] = 0;
 	data->pipefd[1] = 1;
 	data->fd = 0;
@@ -41,6 +42,7 @@ void	ft_init_struct(t_pipex *data)
 	data->filename = NULL;
 	data->cmd_exec = NULL;
 	data->n_cmd = 0;
+	data->n_argc = 0;
 	data->cmd = NULL;
 	data->path = NULL;
 	data->error_signal = 0;
@@ -85,3 +87,17 @@ void	exec_cmd(char *argv[], char *envp[], t_pipex *data)
 			ft_error(1);
 	}
 }
+	void	ft_iter_cmds(char *argv[], char *envp[], int argc, t_pipex *data)
+	{
+		//pipe(data->iter_pipefd);
+		while (1)
+		{
+			data->n_cmd++;
+			data->middle_pid = fork();
+			if (data->middle_pid == 0)
+				middle_child(argv, envp, data);
+			wait(NULL);
+			if (data->n_cmd >= argc -2)
+				break;
+		}
+	}
