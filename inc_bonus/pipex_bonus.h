@@ -15,6 +15,7 @@
 # include "../libft/libft.h"
 # include <fcntl.h>
 # include <sys/wait.h>
+#include <sys/errno.h>
 
 typedef struct s_pipex
 {
@@ -33,6 +34,7 @@ typedef struct s_pipex
 	char	**cmd;
 	char	**path;
 	int		error_signal;
+	
 }	t_pipex;
 
 void	ft_error(int type_error);

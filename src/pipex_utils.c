@@ -14,19 +14,19 @@
 
 void	ft_error(int type_error)
 {
-	if (type_error == 1)
+	if (type_error == 127)
 		perror("Error comand");
 	else if (type_error == 2)
 		perror("Error path");
 	else if (type_error == 3)
 		perror("Error file");
-	else if (type_error == 4)
-		perror("Error input");
+	else if (type_error == 1)
+		perror("Error");
 	else if (type_error == 5)
 		perror("Error memory");
 	else if (type_error == 6)
 		perror("permission denied:");
-	exit(1);
+	exit(type_error);
 }
 
 void	ft_init_struct(t_pipex *data)
@@ -78,10 +78,10 @@ void	exec_cmd(char *argv[], char *envp[], t_pipex *data)
 			free(data->filename);
 		data->filename = ft_strjoin(data->path[data->x], data->cmd_exec);
 		if (!data->filename)
-			ft_error(6);
+			ft_error(-1);
 		if ((execve(data->filename, data->cmd, NULL) == -1))
 			data->x++;
 		if (data->path[data->x] == NULL)
-			ft_error(1);
+			ft_error(127);
 	}
 }

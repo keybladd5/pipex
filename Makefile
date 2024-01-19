@@ -16,7 +16,7 @@ SRCS =  src/pipex.c src/pipex_utils.c
 
 INCLUDES = inc/pipex.h
 
-FLAGS = -Wall -Wextra -Werror -MMD -fsanitize=address
+FLAGS = -Wall -Wextra -Werror -MMD -g
 
 OBJS = $(SRCS:.c=.o)
 

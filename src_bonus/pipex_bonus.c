@@ -27,16 +27,27 @@ static void	first_child(char *argv[], char *envp[], t_pipex *data)
 }
 void	middle_child(char *argv[], char *envp[], t_pipex *data)
 {
-	//if (data->n_cmd == 3)
-	dup2(data->pipefd[0], 0);
-	//else
-		//dup2(data->iter_pipefd[0], 0);
-	close(data->pipefd[0]);
-	//close (data->iter_pipefd[0]);
-	//dup2(data->iter_pipefd[1], 1);
-	//close(data->iter_pipefd[1]);
-	dup2(data->pipefd[1], 1);
-	close(data->pipefd[1]);
+	int loop = 1;
+	while (loop)
+		;
+	if (data->n_cmd % 2 != 0)
+	{
+		close(data->pipefd[1]); //Cerrar escritura
+		close(data->iter_pipefd[0]); // Cerrar lectura del 
+		dup2(data->pipefd[0], 0); // Duplicar contenido del anterior cmd al stdin del actual pipe 1
+		close(data->pipefd[0]); // Cerrar pipes ya usa de lectura
+		dup2(data->iter_pipefd[1], 1); // Duplicar salida stdout al pipe 2
+		close(data->pipefd[1]);
+	}
+	else
+	{
+		close(data->iter_pipefd[1]);
+		close(data->pipefd[0]);
+		dup2(data->iter_pipefd[0], 0);
+		close(data->iter_pipefd[0]);
+		dup2(data->pipefd[1], 1);
+		close(data->pipefd[1]);
+	}
 	exec_cmd(argv, envp, data);
 }
 

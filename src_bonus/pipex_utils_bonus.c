@@ -41,7 +41,7 @@ void	ft_init_struct(t_pipex *data)
 	data->x = 0;
 	data->filename = NULL;
 	data->cmd_exec = NULL;
-	data->n_cmd = 0;
+	data->n_cmd = 2;
 	data->n_argc = 0;
 	data->cmd = NULL;
 	data->path = NULL;
@@ -70,6 +70,19 @@ void	get_path_nd_cmd(char *argv[], char *envp[], t_pipex *data)
 	if (!data->cmd_exec)
 		ft_error(5);
 }
+void	ft_iter_cmds(char *argv[], char *envp[], int argc, t_pipex *data)
+{
+	while (data->n_cmd <= argc -2)
+	{
+		pipe(data->iter_pipefd);
+		data->n_cmd++;
+		data->middle_pid = fork();
+		printf("%d\n", data->middle_pid);
+		if (data->middle_pid == 0)
+			middle_child(argv, envp, data);
+		waitpid(-1, data->exit_status, NULL);
+	}
+}
 
 void	exec_cmd(char *argv[], char *envp[], t_pipex *data)
 {
@@ -87,17 +100,3 @@ void	exec_cmd(char *argv[], char *envp[], t_pipex *data)
 			ft_error(1);
 	}
 }
-	void	ft_iter_cmds(char *argv[], char *envp[], int argc, t_pipex *data)
-	{
-		//pipe(data->iter_pipefd);
-		while (1)
-		{
-			data->n_cmd++;
-			data->middle_pid = fork();
-			if (data->middle_pid == 0)
-				middle_child(argv, envp, data);
-			wait(NULL);
-			if (data->n_cmd >= argc -2)
-				break;
-		}
-	}
