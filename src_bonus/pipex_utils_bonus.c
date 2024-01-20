@@ -21,7 +21,7 @@ void	ft_error(int type_error)
 	else if (type_error == 3)
 		perror("Error file");
 	else if (type_error == 1)
-		perror("Error");
+		perror("Erroradasfasdddg");
 	else if (type_error == 5)
 		perror("Error memory");
 	else if (type_error == 6)
@@ -31,7 +31,6 @@ void	ft_error(int type_error)
 
 void	ft_init_struct(t_pipex *data)
 {
-	data->pid1 = 0;
 	data->pid2 = 0;
 	data->middle_pid = 0;
 	data->pipefd[0] = 0;
@@ -80,9 +79,11 @@ void	ft_child_iter(char *argv[], char *envp[], int argc, t_pipex *data)
 		pipe(data->pipefd);
 		data->n_cmd++;
 		data->middle_pid = fork();
-		//printf("%d\n", data->middle_pid);
 		if (data->middle_pid == 0)
 			child(argv, envp, data);
+		dup2(data->pipefd[0], 0); //ESTO
+		close(data->pipefd[0]);
+		close(data->pipefd[1]);
 	}
 	while(i < argc -2)
 	{
@@ -104,6 +105,6 @@ void	exec_cmd(char *argv[], char *envp[], t_pipex *data)
 		if ((execve(data->filename, data->cmd, NULL) == -1))
 			data->x++;
 		if (data->path[data->x] == NULL)
-			ft_error(1);
+			ft_error(127);
 	}
 }

@@ -48,6 +48,7 @@ int	main(int argc, char *argv[], char *envp[])
 	t_pipex	data;
 	int		status;
 
+	status = 0;
 	if (argc <= 4)
 		ft_error(1);
 	ft_init_struct(&data);
