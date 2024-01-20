@@ -12,39 +12,28 @@
 
 #include "../inc_bonus/pipex_bonus.h"
 
-static void	first_child(char *argv[], char *envp[], t_pipex *data)
+void	child(char *argv[], char *envp[], t_pipex *data)
 {
-	close(data->pipefd[0]);
-	data->fd = open(argv[1], O_RDONLY);
-	if (data->fd < 0)
-		ft_error(3);
-	dup2(data->fd, 0);
-	close(data->fd);
-	dup2(data->pipefd[1], 1);
-	close(data->pipefd[1]);
-	data->n_cmd = 2;
-	exec_cmd(argv, envp, data);
-}
-void	middle_child(char *argv[], char *envp[], t_pipex *data)
-{
-	int loop = 1;
+	/*int loop = 1;
 	while (loop)
-		;
-	if (data->n_cmd % 2 != 0)
+		;*/
+	if (data->n_cmd == 2) 
 	{
-		close(data->pipefd[1]); //Cerrar escritura
-		close(data->iter_pipefd[0]); // Cerrar lectura del 
-		dup2(data->pipefd[0], 0); // Duplicar contenido del anterior cmd al stdin del actual pipe 1
-		close(data->pipefd[0]); // Cerrar pipes ya usa de lectura
-		dup2(data->iter_pipefd[1], 1); // Duplicar salida stdout al pipe 2
+		close(data->pipefd[0]);
+		data->fd = open(argv[1], O_RDONLY);
+		if (data->fd == -1)
+		{
+			close(data->pipefd[1]);
+			ft_error(3);
+		}
+		dup2(data->fd, 0);
+		close(data->fd);
+		dup2(data->pipefd[1], 1);
 		close(data->pipefd[1]);
 	}
 	else
 	{
-		close(data->iter_pipefd[1]);
 		close(data->pipefd[0]);
-		dup2(data->iter_pipefd[0], 0);
-		close(data->iter_pipefd[0]);
 		dup2(data->pipefd[1], 1);
 		close(data->pipefd[1]);
 	}
@@ -54,35 +43,34 @@ void	middle_child(char *argv[], char *envp[], t_pipex *data)
 static void	last_child(char *argv[], char *envp[], t_pipex *data)
 {
 	close(data->pipefd[1]);
-	data->fd = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	data->fd = open(argv[data->n_argc - 1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (data->fd < 0)
-		ft_error(3);
+		ft_error(1);
+	dup2(data->pipefd[0], 0);
 	dup2(data->fd, 1);
 	close(data->fd);
-	dup2(data->pipefd[0], 0);
 	close(data->pipefd[0]);
-	data->n_cmd = data->n_argc - 2;
+	data->n_cmd++;
 	exec_cmd(argv, envp, data);
 }
 
 int	main(int argc, char *argv[], char *envp[])
 {
 	t_pipex	data;
+	int		status;
 
 	if (argc < 5)
 		ft_error(4);
 	ft_init_struct(&data);
 	data.n_argc = argc;
-	pipe(data.pipefd);
-	data.pid1 = fork();
-	if (data.pid1 == 0)
-		first_child(argv, envp, &data);
-	wait(NULL);
-	ft_iter_cmds(argv, envp, argc, &data);
+	ft_child_iter(argv, envp, argc, &data);
 	data.pid2 = fork();
 	if (data.pid2 == 0)
 		last_child(argv, envp, &data);
+	wait(&status);
 	close(data.pipefd[0]);
 	close(data.pipefd[1]);
+	if (WIFEXITED(status) != 0)
+		exit(WEXITSTATUS(status));
 	exit(0);
 }

@@ -14,19 +14,19 @@
 
 void	ft_error(int type_error)
 {
-	if (type_error == 1)
+	if (type_error == 127)
 		perror("Error comand");
 	else if (type_error == 2)
 		perror("Error path");
 	else if (type_error == 3)
 		perror("Error file");
-	else if (type_error == 4)
-		perror("Error input");
+	else if (type_error == 1)
+		perror("Error");
 	else if (type_error == 5)
 		perror("Error memory");
 	else if (type_error == 6)
 		perror("permission denied:");
-	exit(1);
+	exit(type_error);
 }
 
 void	ft_init_struct(t_pipex *data)
@@ -41,7 +41,7 @@ void	ft_init_struct(t_pipex *data)
 	data->x = 0;
 	data->filename = NULL;
 	data->cmd_exec = NULL;
-	data->n_cmd = 2;
+	data->n_cmd = 1;
 	data->n_argc = 0;
 	data->cmd = NULL;
 	data->path = NULL;
@@ -70,17 +70,24 @@ void	get_path_nd_cmd(char *argv[], char *envp[], t_pipex *data)
 	if (!data->cmd_exec)
 		ft_error(5);
 }
-void	ft_iter_cmds(char *argv[], char *envp[], int argc, t_pipex *data)
+void	ft_child_iter(char *argv[], char *envp[], int argc, t_pipex *data)
 {
-	while (data->n_cmd <= argc -2)
+	int i;
+
+	i = data->n_cmd;
+	while (data->n_cmd < argc -2)
 	{
-		pipe(data->iter_pipefd);
+		pipe(data->pipefd);
 		data->n_cmd++;
 		data->middle_pid = fork();
-		printf("%d\n", data->middle_pid);
+		//printf("%d\n", data->middle_pid);
 		if (data->middle_pid == 0)
-			middle_child(argv, envp, data);
-		waitpid(-1, data->exit_status, NULL);
+			child(argv, envp, data);
+	}
+	while(i < argc -2)
+	{
+		i++;
+		wait(NULL);
 	}
 }
 

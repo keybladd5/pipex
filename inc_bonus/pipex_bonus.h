@@ -45,8 +45,8 @@ void	get_path_nd_cmd(char *argv[], char *envp[], t_pipex *data);
 
 void	exec_cmd(char *argv[], char *envp[], t_pipex *data);
 
-void	ft_iter_cmds(char *argv[], char *envp[], int argc, t_pipex *data);
+void	ft_child_iter(char *argv[], char *envp[], int argc, t_pipex *data);
 
-void	middle_child(char *argv[], char *envp[], t_pipex *data);
+void	child(char *argv[], char *envp[], t_pipex *data);
 
 #endif
